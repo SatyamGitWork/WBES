@@ -1,0 +1,11 @@
+import express from 'express';
+import { login, refresh, logout } from '../controllers/auth.controller';
+import { loginLimiter } from '../middleware/rateLimit.middleware';
+
+const router = express.Router();
+
+router.post('/login', loginLimiter, login);
+router.post('/refresh', refresh);
+router.post('/logout', logout);
+
+export default router;
