@@ -97,6 +97,24 @@ export const updateQuiz = async (req: Request, res: Response) => {
       req.body.subjectId = null;
     }
 
+    // Schedule validation
+    const now = new Date();
+    const startDate = req.body.scheduledStartDate ? new Date(req.body.scheduledStartDate) : null;
+    const endDate = req.body.scheduledEndDate ? new Date(req.body.scheduledEndDate) : null;
+
+    if (startDate && startDate < now) {
+      res.status(400).json({ error: 'Scheduled start time cannot be in the past.' });
+      return;
+    }
+    if (endDate && startDate && endDate <= startDate) {
+      res.status(400).json({ error: 'Scheduled end time must be after the start time.' });
+      return;
+    }
+    if (endDate && !startDate && endDate < now) {
+      res.status(400).json({ error: 'Scheduled end time cannot be in the past.' });
+      return;
+    }
+
     // Sanitize any invalid _id values in questions (e.g., from old 'temp_' frontend state)
     if (req.body.sections && Array.isArray(req.body.sections)) {
       req.body.sections.forEach((section: any) => {

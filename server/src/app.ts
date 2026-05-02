@@ -74,8 +74,8 @@ app.use((err: Error, _req: express.Request, res: express.Response, _next: expres
 const startServer = async () => {
   await connectDB();
   app.listen(PORT, () => {
-    console.log(`🚀 ExamPro server running on http://localhost:${PORT}`);
-    console.log(`📊 Health check: http://localhost:${PORT}/api/health`);
+    console.log(`Web-Based Exam System server running on http://localhost:${PORT}`);
+    console.log(`Health check: http://localhost:${PORT}/api/health`);
   });
 };
 

@@ -1,5 +1,5 @@
 {
-  "name": "exampro-server",
+  "name": "wbes-server",
   "version": "1.0.0",
   "description": "ExamSystem Pro — Backend API",
   "main": "dist/app.js",

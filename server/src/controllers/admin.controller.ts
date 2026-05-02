@@ -106,7 +106,8 @@ export const createUser = async (req: Request, res: Response) => {
       return;
     }
 
-    const existingUser = await User.findOne({ email });
+    const normalizedEmail = email.toLowerCase().trim();
+    const existingUser = await User.findOne({ email: { $regex: `^${normalizedEmail}$`, $options: 'i' } });
     if (existingUser) {
       res.status(400).json({ error: 'User with this email already exists' });
       return;
@@ -127,7 +128,7 @@ export const createUser = async (req: Request, res: Response) => {
 
     const user = await User.create({
       name,
-      email,
+      email: normalizedEmail,
       role,
       passwordHash,
       createdBy: (req as any).user.id,
@@ -138,10 +139,10 @@ export const createUser = async (req: Request, res: Response) => {
     });
 
     await sendEmail({
-      to: email,
-      subject: 'Welcome to ExamPro',
+      to: normalizedEmail,
+      subject: 'Welcome to Central Gyandeep School - WBES',
       html: `
-        <h2>Welcome to ExamPro, ${name}!</h2>
+        <h2>Welcome to Central Gyandeep School - WBES, ${name}!</h2>
         <p>Your account has been created by the administrator.</p>
         <p><strong>Your login credentials:</strong></p>
         <p>Email: ${email}</p>
@@ -152,6 +153,7 @@ export const createUser = async (req: Request, res: Response) => {
 
     res.status(201).json(user);
   } catch (error) {
+    console.error('❌ Error in createUser:', error);
     res.status(500).json({ error: 'Server error' });
   }
 };
@@ -167,7 +169,8 @@ export const bulkCreateUsers = async (req: Request, res: Response) => {
     let createdCount = 0;
 
     for (const u of valid) {
-      const existingUser = await User.findOne({ email: u.Email });
+      const normalizedEmail = u.Email.toLowerCase().trim();
+      const existingUser = await User.findOne({ email: { $regex: `^${normalizedEmail}$`, $options: 'i' } });
       if (existingUser) {
         errors.push({ row: '-', reason: `Email ${u.Email} already exists` });
         continue;
@@ -178,7 +181,7 @@ export const bulkCreateUsers = async (req: Request, res: Response) => {
 
       await User.create({
         name: u.Name,
-        email: u.Email,
+        email: normalizedEmail,
         role: u.Role,
         passwordHash,
         createdBy: (req as any).user.id,
@@ -188,10 +191,10 @@ export const bulkCreateUsers = async (req: Request, res: Response) => {
 
       // Send emails asynchronously without awaiting
       sendEmail({
-        to: u.Email,
-        subject: 'Welcome to ExamPro',
+        to: normalizedEmail,
+        subject: 'Welcome to Central Gyandeep School - WBES',
         html: `
-          <h2>Welcome to ExamPro, ${u.Name}!</h2>
+          <h2>Welcome to Central Gyandeep School - WBES, ${u.Name}!</h2>
           <p>Your account has been created by the administrator.</p>
           <p><strong>Your login credentials:</strong></p>
           <p>Email: ${u.Email}</p>

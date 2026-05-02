@@ -112,7 +112,7 @@ export const RoleLayout = ({ allowedRoles }: { allowedRoles: Array<'ADMIN' | 'TE
             <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center">
               <span className="font-bold text-lg">E</span>
             </div>
-            <span className="text-lg font-bold text-slate-800 tracking-tight">ExamPro</span>
+            <span className="text-lg font-bold text-slate-800 tracking-tight">WBES</span>
           </div>
           <Button variant="ghost" size="sm" onClick={logout} className="text-slate-500 hover:text-slate-800">Sign Out</Button>
         </header>

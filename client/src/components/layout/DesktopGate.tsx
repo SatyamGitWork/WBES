@@ -31,7 +31,7 @@ export const DesktopGate = ({ children }: { children: React.ReactNode }) => {
         </svg>
         <h1 className="text-3xl font-bold mb-4">Desktop Required</h1>
         <p className="text-white/80 max-w-md text-lg">
-          ExamPro is designed for desktop environments to ensure a secure and optimal examination experience. 
+          WBES is designed for desktop environments to ensure a secure and optimal examination experience. 
           Please access this application from a laptop or desktop computer with a screen width of at least 1024px.
         </p>
       </div>

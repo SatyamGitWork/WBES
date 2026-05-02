@@ -47,7 +47,7 @@ export const BulkUpload = ({ onClose, onSuccess }: { onClose: () => void, onSucc
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "ExamPro_User_Template.csv");
+    link.setAttribute("download", "WBES_User_Template.csv");
     document.body.appendChild(link);
     link.click();
     link.remove();

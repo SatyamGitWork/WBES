@@ -108,7 +108,7 @@ export const startExam = async (req: Request, res: Response) => {
   }
 };
 
-export const syncExamProgress = async (req: Request, res: Response) => {
+export const syncWBESgress = async (req: Request, res: Response) => {
   try {
     const studentId = (req as any).user.id;
     const { attemptId } = req.params;

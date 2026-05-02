@@ -13,7 +13,7 @@ router.use(requireAuth([Role.STUDENT]));
 router.get('/available', examController.getAvailableExams);
 router.get('/result/:attemptId', examController.getResultDetail);
 router.post('/start/:quizId', auditLog('EXAM_START'), examController.startExam);
-router.put('/sync/:attemptId', examController.syncExamProgress);
+router.put('/sync/:attemptId', examController.syncWBESgress);
 router.post('/submit/:attemptId', submitLimiter, auditLog('EXAM_SUBMIT'), examController.submitExam);
 
 export default router;

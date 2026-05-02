@@ -12,7 +12,7 @@ services:
     environment:
       - NODE_ENV=production
     networks:
-      - exampro-network
+      - wbes-network
     restart: unless-stopped
 
   client:
@@ -22,11 +22,11 @@ services:
     ports:
       - '80:80'
     networks:
-      - exampro-network
+      - wbes-network
     depends_on:
       - server
     restart: unless-stopped
 
 networks:
-  exampro-network:
+  wbes-network:
     driver: bridge

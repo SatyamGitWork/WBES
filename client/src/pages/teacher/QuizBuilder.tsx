@@ -74,16 +74,33 @@ export const QuizBuilder = () => {
   const activeSection = quizData.sections[activeSectionIdx] || quizData.sections[0];
 
   const handleSave = () => {
+    const now = new Date();
+    if (quizData.scheduledStartDate && new Date(quizData.scheduledStartDate) < now) {
+      toast({ title: 'Invalid Schedule', description: 'Start time cannot be in the past.', variant: 'destructive' });
+      return;
+    }
+    if (quizData.scheduledEndDate && quizData.scheduledStartDate && new Date(quizData.scheduledEndDate) <= new Date(quizData.scheduledStartDate)) {
+      toast({ title: 'Invalid Schedule', description: 'End time must be after start time.', variant: 'destructive' });
+      return;
+    }
     setIsSaving(true);
     updateMutation.mutate(quizData);
   };
 
   const handlePublish = () => {
+    const now = new Date();
     if (quizData.sections.some((s: any) => s.questions.length === 0)) {
       toast({ title: 'Cannot Publish', description: 'All sections must have at least one question.', variant: 'destructive' });
       return;
     }
-    
+    if (quizData.scheduledStartDate && new Date(quizData.scheduledStartDate) < now) {
+      toast({ title: 'Cannot Publish', description: 'Start time cannot be in the past.', variant: 'destructive' });
+      return;
+    }
+    if (quizData.scheduledEndDate && quizData.scheduledStartDate && new Date(quizData.scheduledEndDate) <= new Date(quizData.scheduledStartDate)) {
+      toast({ title: 'Cannot Publish', description: 'End time must be after start time.', variant: 'destructive' });
+      return;
+    }
     setIsSaving(true);
     updateMutation.mutate({ ...quizData, status: 'PUBLISHED' });
   };
@@ -268,20 +285,41 @@ export const QuizBuilder = () => {
               <Input 
                 type="datetime-local"
                 value={quizData.scheduledStartDate ? new Date(new Date(quizData.scheduledStartDate).getTime() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0,16) : ''}
-                onChange={(e) => setQuizData({...quizData, scheduledStartDate: e.target.value ? new Date(e.target.value).toISOString() : null})}
+                min={new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0,16)}
+                onChange={(e) => {
+                  const newStart = e.target.value ? new Date(e.target.value).toISOString() : null;
+                  const updated: any = { ...quizData, scheduledStartDate: newStart };
+                  // Clear end date if it's now before new start
+                  if (newStart && quizData.scheduledEndDate && new Date(quizData.scheduledEndDate) <= new Date(newStart)) {
+                    updated.scheduledEndDate = null;
+                  }
+                  setQuizData(updated);
+                }}
                 disabled={isPublished}
                 className="mt-1 bg-white"
               />
+              {quizData.scheduledStartDate && new Date(quizData.scheduledStartDate) < new Date() && (
+                <p className="text-xs text-red-500 mt-1">Start time cannot be in the past.</p>
+              )}
             </div>
             <div>
               <Label className="text-xs text-muted-foreground uppercase">Scheduled End Time</Label>
               <Input 
                 type="datetime-local"
                 value={quizData.scheduledEndDate ? new Date(new Date(quizData.scheduledEndDate).getTime() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0,16) : ''}
+                min={quizData.scheduledStartDate
+                  ? new Date(new Date(quizData.scheduledStartDate).getTime() - new Date().getTimezoneOffset() * 60000 + 60000).toISOString().slice(0,16)
+                  : new Date(Date.now() - new Date().getTimezoneOffset() * 60000 + 60000).toISOString().slice(0,16)}
                 onChange={(e) => setQuizData({...quizData, scheduledEndDate: e.target.value ? new Date(e.target.value).toISOString() : null})}
                 disabled={isPublished}
                 className="mt-1 bg-white"
               />
+              {quizData.scheduledEndDate && quizData.scheduledStartDate && new Date(quizData.scheduledEndDate) <= new Date(quizData.scheduledStartDate) && (
+                <p className="text-xs text-red-500 mt-1">End time must be after start time.</p>
+              )}
+              {quizData.scheduledEndDate && !quizData.scheduledStartDate && new Date(quizData.scheduledEndDate) < new Date() && (
+                <p className="text-xs text-red-500 mt-1">End time cannot be in the past.</p>
+              )}
             </div>
             <div>
               <Label className="text-xs text-muted-foreground uppercase">Global Timing Mode</Label>
